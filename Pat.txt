@@ -1,1 +1,4 @@
-Things to ask Pat
+Things to ask Pat:
+1. Reading Excel into Python
+2. Walking us through the Masters' students code
+3.
