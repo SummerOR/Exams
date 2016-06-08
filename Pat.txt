@@ -2,3 +2,4 @@ Things to ask Pat:
 1. Reading Excel into Python
 2. Walking us through the Masters' students code
 3. Python Inheritance & OOP& Abstraction, how it's different from Java
+4. His opinion on our current hierarchy and any changes that he wants to suggest.
