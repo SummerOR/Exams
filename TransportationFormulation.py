@@ -1,5 +1,6 @@
 ###Balanced Transportaion Problem LP Gurobi Formulation
 from gurobipy import *
+import csv
 """
 @param warehouses: list of warehouses, warehouse[i] = supply of warehouse i
 @param stores: list of stores, stores[j] = demand of store j
@@ -22,35 +23,31 @@ def solve(warehouses, stores, costs):
 
     #Set Constraints
     ###total sent from a warehouse <= supply
-    i = 0
-    for w in range(0, len(warehouses)):
-        m.addConstr(quicksum(shipMatrix[w][s] for s in range(0, len(stores))) <= warehouses[w],"c"   )
-        i = i + 1
-    ###total coming to a store = demand
-    j = 0
-    for s in range(0, len(stores)):
-        m.addConstr(quicksum(shipMatrix[w][s] for w in range(0, len(warehouses))) >= stores[s],"c"  ) 
-        j = j + 1
 
+    for w in range(0, len(warehouses)):
+        m.addConstr(quicksum(shipMatrix[w][s] for s in range(0, len(stores))) <= warehouses[w], name = 'f')
+
+    ###total coming to a store = demand
+
+    for s in range(0, len(stores)):
+        m.addConstr(quicksum(shipMatrix[w][s] for w in range(0, len(warehouses))) >= stores[s], name = 'q')
 
     m.update()
     m.optimize()
 
-    """ for w in range(0, len(warehouses)):
-        for s in range(0, len(stores)):
-            print (shipMatrix[w][s] )
-            obj = m.getObjective()
-            print obj.getValue()"""
-
-
-
-
 
 def main():
+    costs = []
+    fc = csv.reader(open('TransportationCosts.csv', 'rU'))
+    for row in fc:
+        costs.append(row)
+    fw = csv.reader(open('TransportationWarehouses.csv', 'rU'))
+    warehouses = fw.next()
 
-    ware = [7, 8, 3]
-    stor = [3, 5, 2, 8]
-    cost = [[8, 0, 3, 2], [1, 9, 4, 5], [8, 6, 9, 7]]
-    solve (ware, stor, cost)
+    fs = csv.reader(open('TransportationStores.csv', 'rU'))
+    stores = fs.next()
+
+
+    solve (warehouses, stores, costs)
 
 if __name__ == "__main__": main()
