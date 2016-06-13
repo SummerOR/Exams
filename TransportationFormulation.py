@@ -33,19 +33,26 @@ def solve(warehouses, stores, costs):
         m.addConstr(quicksum(shipMatrix[w][s] for w in range(0, len(warehouses))) >= stores[s], name = 'q')
 
     m.update()
-    m.optimize()
+    m.optimize();
+
 
 
 def main():
+
     costs = []
     fc = csv.reader(open('TransportationCosts.csv', 'rU'))
     for row in fc:
+        row = map(int,row)
         costs.append(row)
+    
+    
     fw = csv.reader(open('TransportationWarehouses.csv', 'rU'))
     warehouses = fw.next()
+    warehouses = map(int,warehouses)
 
     fs = csv.reader(open('TransportationStores.csv', 'rU'))
     stores = fs.next()
+    stores = map(int,stores)
 
 
     solve (warehouses, stores, costs)
