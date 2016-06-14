@@ -34,6 +34,16 @@ def solve(warehouses, stores, costs):
 
     m.update()
     m.optimize();
+    foc = csv.writer(open('TransportationSolution.csv','w'), delimiter =',')
+    for w in range(0,len(warehouses)):
+        value=[]
+        for s in range(0,len(stores)):
+            value.append(shipMatrix[w][s].x)
+        foc.writerow(value)
+    obj = m.getObjective()
+    val= []
+    val.append("The objective value is " + str(obj.getValue()))
+    foc.writerow(val)
 
 
 
