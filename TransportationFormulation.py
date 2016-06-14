@@ -15,22 +15,29 @@ def solve(warehouses, stores, costs):
     # create and add decision variables
     shipMatrix=[]
     
-    #arbitraily have decided that we can't ship from warehouse 0 to first and last store.
+    #arbitraily have decided that we can't ship from warehouse 0 to first and last store, and that
+    #the first store can't receive from first and last warehouse.
     
+    #adding decision variables
     for w in range(0, len(warehouses)):
         storestovisit= {}
+        warehousesfrom={}
         storestovisit[w] = storelist(w, stores)
         shipMatrix.append([])
         for s in range(0, len(stores)):
-            if(s in storestovisit[w]):
-                #make a decision variable that model can work with
+            warehousesfrom[s] = warehouselist(s,warehouses)
+            if(s in storestovisit[w] and w in warehousesfrom[s]):
+                #If it's a valid warehouse and a valid store, then add a decision variable
+                #that model can work with
                 shipMatrix[w].append(m.addVar(lb = 0, ub = GRB.INFINITY, vtype = GRB.INTEGER))
             else:
                 #Just add integer 0
                 shipMatrix[w].append(int(0))
+    
     m.update()
     #Create objective value
-    m.setObjective(quicksum(costs[w][s]*shipMatrix[w][s] for w in range(0, len(warehouses)) for s in range(0, len(stores))), GRB.MINIMIZE)
+    m.setObjective(quicksum(costs[w][s]*shipMatrix[w][s] for w in range(0, len(warehouses))
+                            for s in range(0, len(stores))), GRB.MINIMIZE)
 
     #Set Constraints
     ###total sent from a warehouse = supply
@@ -46,7 +53,7 @@ def solve(warehouses, stores, costs):
     m.update()
     m.optimize();
     
-    foc = csv.writer(open('TransportationSolution2.csv','w'), delimiter =',')
+    foc = csv.writer(open('TransportationSolution.csv','w'), delimiter =',')
     for w in range(0,len(warehouses)):
         value=[]
         for s in range(0,len(stores)):
@@ -64,6 +71,8 @@ def solve(warehouses, stores, costs):
 
 
 #returns the list of stores that this warehouse can send to
+#arbitraily we have decided that we can't ship from warehouse 0 to first and last store
+
 def storelist(w, stores):
     list = []
     if w == 0:
@@ -74,8 +83,21 @@ def storelist(w, stores):
             list.append(x)
 
     return list
+
+#returns the list of warehouses that this store can receive from
+#arbitrarily we have decided that the first store can't receive from first and last warehouse.
+def warehouselist(s,warehouses):
+    list=[]
+    if s == 0:
+        for x in range(1,len(warehouses)-1):
+            list.append(x)
+    else:
+        for x in range(0,len(warehouses)):
+            list.append(x)
+    return list
             
-    
+
+
 def main():
 
     costs = []
